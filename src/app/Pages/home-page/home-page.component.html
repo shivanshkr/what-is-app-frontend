@@ -1,0 +1,29 @@
+<div class="home-container">
+  <div class="heading">
+    <span>What-Is-App</span>
+  </div>
+  <div class="login-register-block">
+    <div class="button-section">
+      <button
+        (click)="switchTo('login')"
+        [ngClass]="{
+          'switch-button': true,
+          'cursor-default isActive': isActive === 'login'
+        }"
+      >
+        Login
+      </button>
+      <button
+        (click)="switchTo('signup')"
+        [ngClass]="{
+          'switch-button': true,
+          'cursor-default isActive': isActive === 'signup'
+        }"
+      >
+        Signup
+      </button>
+    </div>
+    <app-login *ngIf="isActive === 'login'"></app-login>
+    <app-signup *ngIf="isActive === 'signup'"></app-signup>
+  </div>
+</div>
