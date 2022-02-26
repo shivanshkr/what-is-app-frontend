@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -17,6 +17,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { ChatBoxComponent } from './Components/chat-box/chat-box.component';
+import { MyChatComponent } from './Components/my-chat/my-chat.component';
+import { TokenInterceptor } from './token.interceptor';
 
 @NgModule({
   declarations: [
@@ -25,6 +28,8 @@ import { MessageService } from 'primeng/api';
     HomePageComponent,
     LoginComponent,
     SignupComponent,
+    ChatBoxComponent,
+    MyChatComponent,
   ],
   imports: [
     BrowserModule,
@@ -39,7 +44,10 @@ import { MessageService } from 'primeng/api';
     ToastModule,
     MatProgressSpinnerModule,
   ],
-  providers: [MessageService],
+  providers: [
+    MessageService,
+    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
