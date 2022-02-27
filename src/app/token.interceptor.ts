@@ -16,7 +16,7 @@ export class TokenInterceptor implements HttpInterceptor {
     request: HttpRequest<unknown>,
     next: HttpHandler
   ): Observable<HttpEvent<unknown>> {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('whatIsAppToken');
     const isAPIUrl = request.url.startsWith(environment.baseUrl);
     if (token && isAPIUrl) {
       request = request.clone({

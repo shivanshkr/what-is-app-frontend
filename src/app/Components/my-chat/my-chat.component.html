@@ -1,39 +1,244 @@
+<p-toast></p-toast>
+
 <div class="header">
-  <div>
-    <img [src]="user.pic" alt="profile picture" />
-    <span class="ms-2">{{ user.name | uppercase }}</span>
+  <div *ngIf="isProfileLoading" style="display: flex; align-items: center">
+    <p-skeleton shape="circle" size="40px"></p-skeleton>
+    <span class="ms-3">
+      <p-skeleton width="200px"></p-skeleton>
+    </span>
+  </div>
+  <div *ngIf="!isProfileLoading">
+    <img
+      [src]="user?.pic || defaultImage"
+      alt="profile picture"
+      style="cursor: pointer"
+      (click)="
+        this.display = true;
+        this.selectedImg = user?.pic || defaultImage;
+        selectedName = user.name
+      "
+    />
+    <span class="ms-3">{{
+      user.name.split(" ")[0] || "NAME" | uppercase
+    }}</span>
   </div>
   <div>
-    <span>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="16"
-        height="16"
-        fill="currentColor"
-        class="bi bi-bell"
-        viewBox="0 0 16 16"
-      >
-        <path
-          d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z"
-        />
-      </svg>
+    <span role="button">
+      <i class="pi pi-bell"></i>
     </span>
-    <span>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="16"
-        height="16"
-        fill="currentColor"
-        class="bi bi-three-dots-vertical"
-        viewBox="0 0 16 16"
-      >
-        <path
-          d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"
-        />
-      </svg>
+    <p-menu
+      [showTransitionOptions]="'0ms'"
+      [hideTransitionOptions]="'0ms'"
+      #menu
+      [popup]="true"
+      [model]="items"
+    ></p-menu>
+    <span class="ms-3" (click)="menu.toggle($event)" role="button">
+      <i class="pi pi-ellipsis-v"></i>
     </span>
   </div>
 </div>
-<div class="add-group"></div>
-<div class="search">search</div>
-<div class="chats">chat</div>
+<div class="add-group">
+  <div class="my-chat">My Chats</div>
+  <button
+    pButton
+    pRipple
+    type="button"
+    icon="pi pi-plus"
+    label="New Chat"
+    (click)="displayNew = true"
+    class="p-button-outlined p-button-info"
+  ></button>
+</div>
+
+<div class="chats">
+  <ng-container *ngIf="chats.length > 0; else chatLoader"></ng-container>
+  <div class="chat" *ngFor="let chat of chats">
+    <img
+      [src]="getChatImage(chat)"
+      alt="profile picture"
+      (click)="showDialog(chat)"
+      class="pointer"
+    />
+    <div
+      class="flex-grow-1 d-flex flex-column ms-3 pointer"
+      (click)="showChat(chat._id, chat)"
+    >
+      <div class="d-flex justify-content-between">
+        <div>
+          {{ getChatName(chat) }}
+          <i
+            class="pi pi-users"
+            *ngIf="chat.isGroupChat"
+            pTooltip="Group Chat"
+            tooltipPosition="top"
+          ></i>
+        </div>
+        <div style="font-size: 0.6rem; color: #989898">
+          {{ getChatTime(chat) }}
+        </div>
+      </div>
+      <div style="font-size: 0.75rem; color: #989898">
+        {{ chat?.latestMessage || "Say Hi" }}
+      </div>
+    </div>
+  </div>
+
+  <ng-template #chatLoader class="custom-skeleton p-p-4">
+    <div class="chat" *ngFor="let _ of [].constructor(5)">
+      <p-skeleton shape="circle" size="40px"></p-skeleton>
+      <div class="flex-grow-1 d-flex flex-column ms-3">
+        <p-skeleton width="100%" styleClass="p-mb-2"></p-skeleton>
+        <p-skeleton width="75%"></p-skeleton>
+      </div>
+    </div>
+  </ng-template>
+</div>
+
+<!-- <div class="search-results" *ngIf="searchText">
+  <div class="chat" *ngFor="let chat of chats">
+    <img
+      [src]="getChatImage(chat)"
+      alt="profile picture"
+      (click)="showDialog(chat)"
+      style="cursor: pointer"
+    />
+    <div class="flex-grow-1 d-flex flex-column ms-3">
+      <div class="d-flex justify-content-between">
+        <div>{{ getChatName(chat) }}</div>
+        <div style="font-size: 0.6rem; color: #989898">
+          {{ getChatTime(chat) }}
+        </div>
+      </div>
+      <div style="font-size: 0.75rem; color: #989898">
+        {{ chat?.latestMessage || "Say Hi" }}
+      </div>
+    </div>
+  </div>
+</div> -->
+
+<!-- big image -->
+<p-dialog
+  header="{{ selectedName }}"
+  [(visible)]="display"
+  [breakpoints]="{ '960px': '75vw', '640px': '100vw' }"
+  [style]="{ width: '50vw' }"
+>
+  <img [src]="selectedImg" alt="" width="100%" height="100%" />
+</p-dialog>
+
+<!-- search and add new chat -->
+<p-sidebar [(visible)]="displayNew">
+  <p-tabView>
+    <p-tabPanel>
+      <ng-template pTemplate="header">
+        <i class="pi pi-search my-font-12"></i>
+        <span class="my-font-12 ms-2">Search User</span>
+      </ng-template>
+      <div>
+        <div class="search">
+          <span class="p-input-icon-right w-100">
+            <i class="pi pi-search" *ngIf="!searchText"></i>
+            <input
+              class="w-100"
+              type="text"
+              pInputText
+              placeholder="Search or start new chat"
+              [(ngModel)]="searchText"
+              (ngModelChange)="searchUsers()"
+            />
+            <i
+              role="button"
+              class="pi pi-times"
+              *ngIf="searchText"
+              (click)="searchText = null"
+            ></i>
+          </span>
+        </div>
+        <div
+          class="search-results"
+          *ngIf="searchResults.length > 0; else noResult"
+        >
+          <div
+            class="chat pointer"
+            *ngFor="let user of searchResults"
+            (click)="accessChat(user._id)"
+          >
+            <img [src]="user.pic" alt="profile picture" />
+            <div class="ms-4">{{ user.name }}</div>
+          </div>
+        </div>
+        <ng-template #noResult> No user Found </ng-template>
+      </div>
+    </p-tabPanel>
+    <p-tabPanel>
+      <ng-template pTemplate="header">
+        <i class="pi pi-plus my-font-12"></i>
+        <span class="my-font-12 ms-2">New Group Chat</span>
+      </ng-template>
+      <div style="min-height: 500px">
+        <form [formGroup]="groupChatForm">
+          <div class="field">
+            <label for="username2" class="block mb-2"
+              >Username
+              <small class="p-error block">*</small>
+            </label>
+            <input
+              class="w-100"
+              id="username2"
+              type="username"
+              aria-describedby="username2-help"
+              formControlName="name"
+              pInputText
+            />
+          </div>
+          <div class="field mt-4">
+            <label for="username2" class="block mb-2"
+              >Users
+              <small class="p-error block">*(2+)</small>
+            </label>
+            <br />
+            <p-multiSelect
+              [options]="allUsers"
+              optionLabel="name"
+              optionValue="_id"
+              formControlName="users"
+              display="chip"
+              [style]="{ width: '100%' }"
+            ></p-multiSelect>
+          </div>
+          <div class="field mt-4">
+            <label for="username2" class="block mb-2"> Group Picture </label>
+            <br />
+            <div style="display: flex; align-items: center">
+              <p-fileUpload
+                [disabled]="isUploading"
+                name="group[]"
+                mode="basic"
+                [customUpload]="true"
+                (uploadHandler)="onImageUpload($event)"
+                [auto]="true"
+                chooseLabel="Browse"
+              ></p-fileUpload>
+              <mat-spinner
+                class="spinner ms-2"
+                [diameter]="25"
+                *ngIf="isUploading"
+              >
+              </mat-spinner>
+            </div>
+          </div>
+
+          <button
+            class="mt-4"
+            pButton
+            type="button"
+            label="Create Group"
+            (click)="createGroup()"
+            [disabled]="!groupChatForm.valid || isUploading"
+          ></button>
+        </form>
+      </div>
+    </p-tabPanel>
+  </p-tabView>
+</p-sidebar>

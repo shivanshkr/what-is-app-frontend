@@ -1,0 +1,26 @@
+<div class="d-flex align-items-center">
+  <div *ngIf="!editName" class="chatName">
+    {{ group.chatName }}
+  </div>
+  <button
+    *ngIf="!true"
+    pButton
+    pRipple
+    type="button"
+    icon="pi pi-pencil"
+    class="p-button-rounded p-button-text"
+    (click)="editName = true"
+  ></button>
+</div>
+<p-divider></p-divider>
+
+<div>
+  <div class="members">Members</div>
+  <div *ngFor="let user of group.users" class="member">
+    {{ user.name }}
+  </div>
+</div>
+
+<div>Add member</div>
+
+<div>delete</div>

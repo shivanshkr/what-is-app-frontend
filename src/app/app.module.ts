@@ -8,7 +8,7 @@ import { ChatPageComponent } from './Pages/chat-page/chat-page.component';
 import { HomePageComponent } from './Pages/home-page/home-page.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LoginComponent } from './Components/login/login.component';
 import { SignupComponent } from './Components/signup/signup.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -20,6 +20,18 @@ import { MessageService } from 'primeng/api';
 import { ChatBoxComponent } from './Components/chat-box/chat-box.component';
 import { MyChatComponent } from './Components/my-chat/my-chat.component';
 import { TokenInterceptor } from './token.interceptor';
+import { InputTextModule } from 'primeng/inputtext';
+import { DividerModule } from 'primeng/divider';
+import { DatePipe } from '@angular/common';
+import { DialogModule } from 'primeng/dialog';
+import { MenuModule } from 'primeng/menu';
+import { SidebarModule } from 'primeng/sidebar';
+import { TabViewModule } from 'primeng/tabview';
+import { TooltipModule } from 'primeng/tooltip';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { SkeletonModule } from 'primeng/skeleton';
+import { FileUploadModule } from 'primeng/fileupload';
+import { GroupDetailsComponent } from './Components/group-details/group-details.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +42,7 @@ import { TokenInterceptor } from './token.interceptor';
     SignupComponent,
     ChatBoxComponent,
     MyChatComponent,
+    GroupDetailsComponent,
   ],
   imports: [
     BrowserModule,
@@ -43,8 +56,20 @@ import { TokenInterceptor } from './token.interceptor';
     ButtonModule,
     ToastModule,
     MatProgressSpinnerModule,
+    InputTextModule,
+    DividerModule,
+    DialogModule,
+    MenuModule,
+    FormsModule,
+    SidebarModule,
+    TabViewModule,
+    TooltipModule,
+    MultiSelectModule,
+    SkeletonModule,
+    FileUploadModule,
   ],
   providers: [
+    DatePipe,
     MessageService,
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
   ],

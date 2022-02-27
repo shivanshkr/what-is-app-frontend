@@ -1,1 +1,64 @@
-<p>chat-box works!</p>
+<p-toast></p-toast>
+<div *ngIf="selectedChat == ''" style="height: 100%"></div>
+<div class="h-100" *ngIf="selectedChat != ''">
+  <div class="header">
+    <div style="display: flex; align-items: center">
+      <button
+        pButton
+        pRipple
+        type="button"
+        icon="pi pi-arrow-left"
+        (click)="showChatList()"
+        class="display-none p-button-raised p-button-secondary me-2"
+      ></button>
+      <img
+        [src]="getChatImage()"
+        alt="pic"
+        style="cursor: pointer"
+        (click)="this.display = true; this.selectedImg = getChatImage()"
+      />
+      <span class="ms-3">
+        {{ getChatName() }}
+      </span>
+    </div>
+    <div>
+      <p-menu
+        [showTransitionOptions]="'0ms'"
+        [hideTransitionOptions]="'0ms'"
+        #menu
+        [popup]="true"
+        [model]="items"
+      ></p-menu>
+      <span class="ms-3" (click)="menu.toggle($event)" role="button">
+        <i class="pi pi-ellipsis-v"></i>
+      </span>
+    </div>
+  </div>
+
+  <div class="body">chats</div>
+
+  <div class="footer">selectedChat : {{ selectedChat }}</div>
+</div>
+
+<!-- big image -->
+<p-dialog
+  [(visible)]="display"
+  [breakpoints]="{ '960px': '75vw', '640px': '100vw' }"
+  [style]="{ width: '50vw' }"
+>
+  <img [src]="selectedImg" alt="" width="100%" height="100%" />
+</p-dialog>
+
+<!-- Group Info -->
+<p-dialog
+  header="Group Info"
+  [(visible)]="displayGroupInfo"
+  [breakpoints]="{ '960px': '75vw', '640px': '100vw' }"
+  [style]="{ width: '50vw' }"
+>
+  <app-group-details
+    [userId]="user._id"
+    [chatId]="selectedChat"
+    [group]="selectFullChat"
+  ></app-group-details>
+</p-dialog>

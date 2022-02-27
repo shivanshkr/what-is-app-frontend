@@ -11,9 +11,10 @@ export class ChatPageComponent implements OnInit {
 
   constructor(private chatService: ChatService) {}
 
+  selectedChat = '';
   ngOnInit(): void {
-    // this.chatService.getChat().subscribe((res: any) => {
-    //   this.chats = res.chats;
-    // });
+    this.chatService.selectedChatSubject.subscribe((chatId: string) => {
+      this.selectedChat = chatId;
+    });
   }
 }

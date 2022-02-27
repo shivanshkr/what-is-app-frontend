@@ -21,7 +21,7 @@ export class AuthGuard implements CanActivate {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    let token = localStorage.getItem('token');
+    let token = localStorage.getItem('whatIsAppToken');
     let id = localStorage.getItem('id');
     if (token) {
       const tokenDecode = JSON.parse(atob(token.split('.')[1]));

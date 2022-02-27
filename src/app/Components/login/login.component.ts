@@ -50,7 +50,7 @@ export class LoginComponent implements OnInit {
           severity: 'success',
           summary: `Login successful`,
         });
-        localStorage.setItem('token', res?.token);
+        localStorage.setItem('whatIsAppToken', res?.token);
         localStorage.setItem('id', res?.id);
         this.isLoading = false;
         this.router.navigate(['/chat']);

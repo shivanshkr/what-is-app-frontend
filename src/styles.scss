@@ -6,7 +6,6 @@
 // @import "~primeflex/primeflex.css";
 
 body {
-  font-family: "Work Sans", sans-serif;
   background-image: url("./assets/wallpaper1.jpg");
   // background-repeat: no-repeat;
   background-size: cover;
@@ -20,4 +19,7 @@ body {
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+body > * {
+  font-family: "Work Sans", sans-serif;
 }
