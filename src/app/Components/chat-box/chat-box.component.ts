@@ -27,7 +27,7 @@ export class ChatBoxComponent implements OnInit {
     });
     this.chatService.selectedFullChatSubject.subscribe((chat: any) => {
       this.selectFullChat = chat;
-      if (this.selectFullChat.isGroupChat) {
+      if (this.selectFullChat?.isGroupChat) {
         this.items = [
           {
             label: 'Group Info',

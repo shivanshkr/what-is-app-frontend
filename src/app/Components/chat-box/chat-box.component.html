@@ -57,6 +57,7 @@
   [style]="{ width: '50vw' }"
 >
   <app-group-details
+    *ngIf="selectedChat != ''"
     [userId]="user._id"
     [chatId]="selectedChat"
     [group]="selectFullChat"
