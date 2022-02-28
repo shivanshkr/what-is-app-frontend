@@ -9,7 +9,7 @@
   </div>
   <div *ngIf="!isProfileLoading">
     <img
-      [src]="user?.pic || defaultImage"
+      [src]="getOptimizedImgUrl(user?.pic || defaultImage)"
       alt="profile picture"
       style="cursor: pointer"
       (click)="
@@ -155,9 +155,11 @@
             ></i>
           </span>
         </div>
+        <mat-spinner class="mx-4" [diameter]="50" *ngIf="isSearchLoading">
+        </mat-spinner>
         <div
           class="search-results"
-          *ngIf="searchResults.length > 0; else noResult"
+          *ngIf="!isSearchLoading && searchResults.length > 0; else noResult"
         >
           <div
             class="chat pointer"

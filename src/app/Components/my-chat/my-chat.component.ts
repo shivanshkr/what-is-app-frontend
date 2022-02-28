@@ -35,7 +35,7 @@ export class MyChatComponent implements OnInit {
   user: User = defaultUser;
   chats: Chat[] = [];
   defaultImage =
-    'https://www.pngfind.com/pngs/m/676-6764065_default-profile-picture-transparent-hd-png-download.png';
+    'https://res.cloudinary.com/what-is-app/image/upload/v1646062233/profilePic_uigcf8.png';
   isProfileLoading = false;
   ngOnInit(): void {
     this.isProfileLoading = true;
@@ -66,12 +66,34 @@ export class MyChatComponent implements OnInit {
       });
     this.initGroupForm();
   }
-  getChatImage(chat: Chat) {
+  getChatImage(chat: Chat, option: boolean = true) {
+    let imgUrl = '';
     if (chat.isGroupChat) {
-      return chat?.groupPic || this.defaultImage;
+      imgUrl = chat?.groupPic || this.defaultImage;
+    } else {
+      let user = chat.users.filter((user: User) => user._id !== this.user._id);
+      imgUrl = user[0].pic;
     }
-    let user = chat.users.filter((user: User) => user._id !== this.user._id);
-    return user[0].pic;
+    let imgUrlOptimize = imgUrl;
+    if (option) {
+      imgUrlOptimize = this.getOptimizedImgUrl(imgUrl);
+    }
+    return imgUrlOptimize;
+  }
+
+  getOptimizedImgUrl(imgUrl: string): string {
+    let imgUrlOptimize = imgUrl;
+    if (
+      imgUrl.startsWith('https://res.cloudinary.com/what-is-app/image/upload/')
+    ) {
+      imgUrlOptimize =
+        'https://res.cloudinary.com/what-is-app/image/upload/w_100,h_100,c_thumb/' +
+        imgUrl.replace(
+          'https://res.cloudinary.com/what-is-app/image/upload/',
+          ''
+        );
+    }
+    return imgUrlOptimize;
   }
 
   getChatName(chat: Chat) {
@@ -100,17 +122,20 @@ export class MyChatComponent implements OnInit {
 
   //Search user
   timeOut: any;
+  isSearchLoading = false;
   searchUsers(searchTerm: string = '') {
     if (this.timeOut) {
       clearTimeout(this.timeOut);
     }
     this.timeOut = setTimeout(() => {
+      this.isSearchLoading = true;
       if (this.searchText) {
         this.AS.getSearchUser(this.searchText)
           .pipe(take(1))
           .subscribe((res: User[]) => {
             console.log(res);
             this.searchResults = res;
+            this.isSearchLoading = false;
           });
       } else {
         this.AS.getSearchUser(searchTerm)
@@ -118,9 +143,10 @@ export class MyChatComponent implements OnInit {
           .subscribe((res: User[]) => {
             console.log(res);
             this.searchResults = res;
+            this.isSearchLoading = false;
           });
       }
-    }, 500);
+    }, 300);
   }
 
   display: boolean = false;
@@ -131,7 +157,7 @@ export class MyChatComponent implements OnInit {
 
   showDialog(chat: Chat) {
     this.display = true;
-    this.selectedImg = this.getChatImage(chat);
+    this.selectedImg = this.getChatImage(chat, false);
     this.selectedName = this.getChatName(chat);
   }
 

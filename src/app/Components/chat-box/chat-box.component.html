@@ -12,10 +12,10 @@
         class="display-none p-button-raised p-button-secondary me-2"
       ></button>
       <img
-        [src]="getChatImage()"
+        [src]="getChatImage(true)"
         alt="pic"
         style="cursor: pointer"
-        (click)="this.display = true; this.selectedImg = getChatImage()"
+        (click)="this.display = true; this.selectedImg = getChatImage(false)"
       />
       <span class="ms-3">
         {{ getChatName() }}

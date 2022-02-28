@@ -13,7 +13,7 @@ export class ChatBoxComponent implements OnInit {
   constructor(private chatService: ChatService, private AS: AuthService) {}
   items: MenuItem[] = [];
   defaultImage =
-    'https://www.pngfind.com/pngs/m/676-6764065_default-profile-picture-transparent-hd-png-download.png';
+    'https://res.cloudinary.com/what-is-app/image/upload/v1646062233/profilePic_uigcf8.png';
 
   selectedImg = '';
   display = false;
@@ -52,13 +52,35 @@ export class ChatBoxComponent implements OnInit {
     this.chatService.changeSelectedChat('', null);
   }
 
-  getChatImage() {
+  getChatImage(option: boolean = true) {
     let chat = this.selectFullChat;
+    let imgUrl = '';
     if (chat.isGroupChat) {
-      return chat?.groupPic || this.defaultImage;
+      imgUrl = chat?.groupPic || this.defaultImage;
+    } else {
+      let user = chat.users.filter((user: User) => user._id !== this.user._id);
+      imgUrl = user[0].pic;
     }
-    let user = chat.users.filter((user: User) => user._id !== this.user._id);
-    return user[0].pic;
+
+    let imgUrlOptimize = imgUrl;
+    if (option) {
+      imgUrlOptimize = this.getOptimizedImgUrl(imgUrl);
+    }
+    return imgUrlOptimize;
+  }
+  getOptimizedImgUrl(imgUrl: string): string {
+    let imgUrlOptimize = imgUrl;
+    if (
+      imgUrl.startsWith('https://res.cloudinary.com/what-is-app/image/upload/')
+    ) {
+      imgUrlOptimize =
+        'https://res.cloudinary.com/what-is-app/image/upload/w_100,h_100,c_thumb/' +
+        imgUrl.replace(
+          'https://res.cloudinary.com/what-is-app/image/upload/',
+          ''
+        );
+    }
+    return imgUrlOptimize;
   }
 
   getChatName() {
