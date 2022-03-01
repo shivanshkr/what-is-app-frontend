@@ -78,8 +78,8 @@
           {{ getChatTime(chat) }}
         </div>
       </div>
-      <div style="font-size: 0.75rem; color: #989898">
-        {{ chat?.latestMessage || "Say Hi" }}
+      <div class="truncate" style="font-size: 0.75rem; color: #989898">
+        {{ chat?.latestMessage?.content || "Say Hi" }}
       </div>
     </div>
   </div>

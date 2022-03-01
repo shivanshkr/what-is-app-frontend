@@ -7,7 +7,9 @@ export interface Chat {
   groupAdmin?: User;
   createdAt: string;
   updatedAt: string;
-  latestMessage?: string;
+  latestMessage?: {
+    content?: string;
+  };
   __v: number;
 }
 

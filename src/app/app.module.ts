@@ -32,6 +32,10 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { SkeletonModule } from 'primeng/skeleton';
 import { FileUploadModule } from 'primeng/fileupload';
 import { GroupDetailsComponent } from './Components/group-details/group-details.component';
+import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+import { environment } from 'src/environments/environment';
+
+const config: SocketIoConfig = { url: environment.baseUrl, options: {} };
 
 @NgModule({
   declarations: [
@@ -67,6 +71,7 @@ import { GroupDetailsComponent } from './Components/group-details/group-details.
     MultiSelectModule,
     SkeletonModule,
     FileUploadModule,
+    SocketIoModule.forRoot(config),
   ],
   providers: [
     DatePipe,

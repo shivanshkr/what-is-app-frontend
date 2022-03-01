@@ -35,9 +35,50 @@
     </div>
   </div>
 
-  <div class="body">chats</div>
+  <div class="body">
+    <!-- chats selectedChat : {{ selectedChat }} -->
 
-  <div class="footer">selectedChat : {{ selectedChat }}</div>
+    <div
+      class="message"
+      *ngFor="let message of messages"
+      [class.my-message]="user._id === message.sender._id"
+    >
+      <div
+        *ngIf="
+          this.selectFullChat?.isGroupChat && user._id !== message.sender._id
+        "
+        class="message-sender"
+      >
+        {{ message.sender.name }}
+      </div>
+      <div>
+        {{ message.content }}
+        <span class="message-time">{{
+          message.createdAt | date: "HH:MM"
+        }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="p-inputgroup">
+      <input
+        type="text"
+        pInputText
+        placeholder="Keyword"
+        [(ngModel)]="message"
+      />
+      <button
+        type="button"
+        pButton
+        pRipple
+        icon="pi pi-send"
+        styleClass="p-button-warn"
+        [disabled]="message === ''"
+        (click)="sendMessage()"
+      ></button>
+    </div>
+  </div>
 </div>
 
 <!-- big image -->

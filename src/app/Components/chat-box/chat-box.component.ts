@@ -3,6 +3,7 @@ import { MenuItem } from 'primeng/api';
 import { Chat, defaultUser, User } from 'src/app/Models/Model';
 import { AuthService } from 'src/app/Services/auth.service';
 import { ChatService } from 'src/app/Services/chat.service';
+import { MessageService } from 'src/app/Services/message.service';
 
 @Component({
   selector: 'app-chat-box',
@@ -10,7 +11,11 @@ import { ChatService } from 'src/app/Services/chat.service';
   styleUrls: ['./chat-box.component.scss'],
 })
 export class ChatBoxComponent implements OnInit {
-  constructor(private chatService: ChatService, private AS: AuthService) {}
+  constructor(
+    private chatService: ChatService,
+    private AS: AuthService,
+    private MS: MessageService
+  ) {}
   items: MenuItem[] = [];
   defaultImage =
     'https://res.cloudinary.com/what-is-app/image/upload/v1646062233/profilePic_uigcf8.png';
@@ -20,10 +25,13 @@ export class ChatBoxComponent implements OnInit {
   selectedChat = '';
   selectFullChat: any = {};
   user: User = defaultUser;
+  isChatLoading = false;
+  messages: any[] = [];
 
   ngOnInit(): void {
     this.chatService.selectedChatSubject.subscribe((chatId: string) => {
       this.selectedChat = chatId;
+      this.getAllChatMessages();
     });
     this.chatService.selectedFullChatSubject.subscribe((chat: any) => {
       this.selectFullChat = chat;
@@ -95,5 +103,25 @@ export class ChatBoxComponent implements OnInit {
   displayGroupInfo = false;
   showGroupInfo() {
     this.displayGroupInfo = true;
+  }
+
+  getAllChatMessages() {
+    this.isChatLoading = true;
+    this.MS.getAllChatMessages(this.selectedChat).subscribe((res: any) => {
+      this.messages = res;
+      this.isChatLoading = false;
+    });
+  }
+  message = '';
+  sendMessage() {
+    let data = {
+      content: this.message,
+      chatId: this.selectedChat,
+    };
+    this.message = '';
+    this.MS.sendMessage(data).subscribe((res) => {
+      console.log(res);
+      this.getAllChatMessages();
+    });
   }
 }
