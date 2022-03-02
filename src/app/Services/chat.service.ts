@@ -14,6 +14,8 @@ export class ChatService {
   selectedFullChatSubject = new Subject<Chat | null>();
   selectedFullChat: Chat | null = null;
 
+  gotNewMsg = new Subject<boolean>();
+
   baseUrl = environment.baseUrl + '/api/chat';
 
   constructor(private http: HttpClient) {}

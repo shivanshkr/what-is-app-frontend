@@ -39,16 +39,12 @@ export class MyChatComponent implements OnInit {
   isProfileLoading = false;
   ngOnInit(): void {
     this.isProfileLoading = true;
-
     this.AS.getMyProfile().subscribe((res: User) => {
       console.log(res);
       this.user = res;
       this.isProfileLoading = false;
     });
-    this.chatService.getChat().subscribe((res: Chat[]) => {
-      console.log(res);
-      this.chats = res;
-    });
+    this.fetchAllChat();
     this.items = [
       {
         label: 'LogOut',
@@ -65,7 +61,17 @@ export class MyChatComponent implements OnInit {
         this.allUsers = res;
       });
     this.initGroupForm();
+    this.chatService.gotNewMsg.subscribe((res) => {
+      this.fetchAllChat();
+    });
   }
+  fetchAllChat() {
+    this.chatService.getChat().subscribe((res: Chat[]) => {
+      console.log(res);
+      this.chats = res;
+    });
+  }
+
   getChatImage(chat: Chat, option: boolean = true) {
     let imgUrl = '';
     if (chat.isGroupChat) {

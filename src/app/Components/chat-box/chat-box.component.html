@@ -38,26 +38,30 @@
   <div class="body">
     <!-- chats selectedChat : {{ selectedChat }} -->
 
-    <div
-      class="message"
-      *ngFor="let message of messages"
-      [class.my-message]="user._id === message.sender._id"
-    >
+    <ng-container *ngFor="let message of messages; let i = index">
+      <div class="message" [class.my-message]="user._id === message.sender._id">
+        <div
+          *ngIf="
+            this.selectFullChat?.isGroupChat && user._id !== message.sender._id
+          "
+          class="message-sender"
+        >
+          {{ message.sender.name }}
+        </div>
+        <div>
+          {{ message.content }}
+          <span class="message-time">{{
+            message.createdAt | date: "HH:MM"
+          }}</span>
+        </div>
+      </div>
       <div
-        *ngIf="
-          this.selectFullChat?.isGroupChat && user._id !== message.sender._id
-        "
-        class="message-sender"
+        class="date"
+        *ngIf="showDate(message.createdAt, messages[i + 1]?.createdAt)"
       >
-        {{ message.sender.name }}
+        {{ message.createdAt | date }}
       </div>
-      <div>
-        {{ message.content }}
-        <span class="message-time">{{
-          message.createdAt | date: "HH:MM"
-        }}</span>
-      </div>
-    </div>
+    </ng-container>
   </div>
 
   <div class="footer">
@@ -76,6 +80,7 @@
         styleClass="p-button-warn"
         [disabled]="message === ''"
         (click)="sendMessage()"
+        (window:keydown.enter)="sendMessage()"
       ></button>
     </div>
   </div>

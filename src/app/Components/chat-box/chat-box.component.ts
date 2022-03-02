@@ -4,6 +4,9 @@ import { Chat, defaultUser, User } from 'src/app/Models/Model';
 import { AuthService } from 'src/app/Services/auth.service';
 import { ChatService } from 'src/app/Services/chat.service';
 import { MessageService } from 'src/app/Services/message.service';
+import { io } from 'socket.io-client';
+import { environment } from 'src/environments/environment';
+const SOCKET_ENDPOINT = environment.baseUrl;
 
 @Component({
   selector: 'app-chat-box',
@@ -27,11 +30,18 @@ export class ChatBoxComponent implements OnInit {
   user: User = defaultUser;
   isChatLoading = false;
   messages: any[] = [];
+  selectedChatCompare = '';
 
   ngOnInit(): void {
+    console.log('ngoninit');
+    this.setupSocketConnection();
     this.chatService.selectedChatSubject.subscribe((chatId: string) => {
       this.selectedChat = chatId;
-      this.getAllChatMessages();
+      this.selectedChatCompare = this.selectedChat;
+      if (this.selectedChat) {
+        this.getAllChatMessages();
+        this.socket.emit('join chat', this.selectedChat);
+      }
     });
     this.chatService.selectedFullChatSubject.subscribe((chat: any) => {
       this.selectFullChat = chat;
@@ -52,6 +62,20 @@ export class ChatBoxComponent implements OnInit {
     this.AS.getMyProfile().subscribe((res: User) => {
       console.log(res);
       this.user = res;
+      this.socket.emit('setup', this.user);
+    });
+
+    this.socket.on('message received', (newMessageReceived: any) => {
+      if (
+        !this.selectedChat ||
+        this.selectedChat !== newMessageReceived.chat._id
+      ) {
+        //give Notification
+        console.log('hello');
+        this.chatService.gotNewMsg.next(true);
+      } else {
+        this.messages = [newMessageReceived, ...this.messages];
+      }
     });
   }
 
@@ -121,7 +145,29 @@ export class ChatBoxComponent implements OnInit {
     this.message = '';
     this.MS.sendMessage(data).subscribe((res) => {
       console.log(res);
-      this.getAllChatMessages();
+      this.socket.emit('new message', res);
+      this.messages = [res, ...this.messages];
     });
+  }
+  socket: any;
+  socketConnected = false;
+  setupSocketConnection() {
+    this.socket = io(SOCKET_ENDPOINT);
+    this.socket.on('connection', () => {
+      this.socketConnected = true;
+    });
+  }
+
+  showDate(msgDate: any, previousMsgDate: any = '1-1-1800') {
+    msgDate = new Date(msgDate);
+    previousMsgDate = new Date(previousMsgDate);
+    if (
+      msgDate.getDate() === previousMsgDate.getDate() &&
+      msgDate.getMonth() === previousMsgDate.getMonth() &&
+      msgDate.getFullYear() === previousMsgDate.getFullYear()
+    ) {
+      return false;
+    }
+    return true;
   }
 }

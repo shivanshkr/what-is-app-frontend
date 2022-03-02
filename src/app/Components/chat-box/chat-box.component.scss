@@ -23,7 +23,13 @@
   overflow-y: auto;
   padding: 0 8px;
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
+  .date {
+    align-self: center;
+    padding: 1px 12px;
+    background-color: white;
+    border-radius: 8px;
+  }
   .message-sender {
     font-weight: 700;
     font-size: 10px;
