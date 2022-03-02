@@ -60,7 +60,6 @@ export class ChatBoxComponent implements OnInit {
       }
     });
     this.AS.getMyProfile().subscribe((res: User) => {
-      console.log(res);
       this.user = res;
       this.socket.emit('setup', this.user);
     });
@@ -143,6 +142,8 @@ export class ChatBoxComponent implements OnInit {
       chatId: this.selectedChat,
     };
     this.message = '';
+    this.socket.emit('stop typing', this.selectedChat);
+
     this.MS.sendMessage(data).subscribe((res) => {
       console.log(res);
       this.socket.emit('new message', res);
@@ -153,8 +154,15 @@ export class ChatBoxComponent implements OnInit {
   socketConnected = false;
   setupSocketConnection() {
     this.socket = io(SOCKET_ENDPOINT);
-    this.socket.on('connection', () => {
+    this.socket.on('connected', () => {
       this.socketConnected = true;
+      console.log('connnected');
+    });
+    this.socket.on('typing', () => {
+      this.isTyping = true;
+    });
+    this.socket.on('stop typing', () => {
+      this.isTyping = false;
     });
   }
 
@@ -169,5 +177,28 @@ export class ChatBoxComponent implements OnInit {
       return false;
     }
     return true;
+  }
+
+  typing = false;
+  isTyping = false;
+
+  typingHandler() {
+    if (!this.socketConnected) {
+      return;
+    }
+    if (!this.typing) {
+      this.typing = true;
+      this.socket.emit('typing', this.selectedChat);
+    }
+    let lastTypingTime = new Date().getTime();
+    var timerLength = 2000;
+    setTimeout(() => {
+      var timeNow = new Date().getTime();
+      var timeDiff = timeNow - lastTypingTime;
+      if (timeDiff >= timerLength && this.typing) {
+        this.socket.emit('stop typing', this.selectedChat);
+        this.typing = false;
+      }
+    }, timerLength);
   }
 }

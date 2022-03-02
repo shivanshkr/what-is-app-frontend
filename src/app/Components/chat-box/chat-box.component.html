@@ -37,6 +37,7 @@
 
   <div class="body">
     <!-- chats selectedChat : {{ selectedChat }} -->
+    <span class="typing" *ngIf="isTyping">Typing...</span>
 
     <ng-container *ngFor="let message of messages; let i = index">
       <div
@@ -75,6 +76,7 @@
         pInputText
         placeholder="Keyword"
         [(ngModel)]="message"
+        (ngModelChange)="typingHandler()"
       />
       <button
         type="button"
