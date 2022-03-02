@@ -39,7 +39,11 @@
     <!-- chats selectedChat : {{ selectedChat }} -->
 
     <ng-container *ngFor="let message of messages; let i = index">
-      <div class="message" [class.my-message]="user._id === message.sender._id">
+      <div
+        class="message"
+        [class.my-message]="user._id === message.sender._id"
+        [class.mb-4]="i == 0"
+      >
         <div
           *ngIf="
             this.selectFullChat?.isGroupChat && user._id !== message.sender._id
@@ -79,8 +83,9 @@
         icon="pi pi-send"
         styleClass="p-button-warn"
         [disabled]="message === ''"
-        (click)="sendMessage()"
-        (window:keydown.enter)="sendMessage()"
+        (click)="sendMessage(); $event.preventDefault()"
+        (window:keydown.enter)="sendMessage(); $event.preventDefault()"
+        (mousedown)="sendMessage(); $event.preventDefault()"
       ></button>
     </div>
   </div>
