@@ -31,9 +31,34 @@ export class ChatBoxComponent implements OnInit {
   isChatLoading = false;
   messages: any[] = [];
   selectedChatCompare = '';
+  notification: any[] = [];
+  itemsNotification: MenuItem[] = [];
 
   ngOnInit(): void {
     console.log('ngoninit');
+    this.chatService.notification.subscribe((n) => {
+      this.notification = n;
+      this.itemsNotification = [];
+      this.notification.forEach((noti: any) => {
+        this.itemsNotification.push({
+          label: noti.chat.isGroupChat
+            ? noti.chat.chatName.substring(0, 15) +
+              ' : ' +
+              noti.content.substring(0, 15)
+            : noti.sender.name.substring(0, 10) +
+              ' : ' +
+              noti.content.substring(0, 15),
+          command: () => {
+            this.chatService.selectedChatSubject.next(noti.chat._id);
+            this.chatService.selectedFullChatSubject.next(noti.chat);
+            let newNotification = this.notification.filter(
+              (n) => n.chat._id !== noti.chat._id
+            );
+            this.chatService.notification.next(newNotification);
+          },
+        });
+      });
+    });
     this.setupSocketConnection();
     this.chatService.selectedChatSubject.subscribe((chatId: string) => {
       this.selectedChat = chatId;
@@ -70,7 +95,12 @@ export class ChatBoxComponent implements OnInit {
         this.selectedChat !== newMessageReceived.chat._id
       ) {
         //give Notification
-        console.log('hello');
+        if (!this.notification.includes(newMessageReceived)) {
+          this.chatService.notification.next([
+            newMessageReceived,
+            ...this.notification,
+          ]);
+        }
         this.chatService.gotNewMsg.next(true);
       } else {
         this.messages = [newMessageReceived, ...this.messages];

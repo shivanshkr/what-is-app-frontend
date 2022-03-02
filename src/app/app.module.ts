@@ -34,6 +34,7 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { GroupDetailsComponent } from './Components/group-details/group-details.component';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { environment } from 'src/environments/environment';
+import { BadgeModule } from 'primeng/badge';
 
 const config: SocketIoConfig = { url: environment.baseUrl, options: {} };
 
@@ -72,6 +73,7 @@ const config: SocketIoConfig = { url: environment.baseUrl, options: {} };
     SkeletonModule,
     FileUploadModule,
     SocketIoModule.forRoot(config),
+    BadgeModule,
   ],
   providers: [
     DatePipe,

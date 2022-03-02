@@ -24,8 +24,19 @@
   </div>
   <div>
     <span role="button">
-      <i class="pi pi-bell"></i>
+      <i
+        class="pi pi-bell"
+        pBadge
+        style="font-size: 1.5rem"
+        value="{{ notification.length }}"
+        (click)="menuNotification.toggle($event)"
+      ></i>
     </span>
+    <p-menu
+      #menuNotification
+      [popup]="true"
+      [model]="itemsNotification"
+    ></p-menu>
     <p-menu
       [showTransitionOptions]="'0ms'"
       [hideTransitionOptions]="'0ms'"
@@ -40,6 +51,14 @@
 </div>
 <div class="add-group">
   <div class="my-chat">My Chats</div>
+  <button
+    type="button"
+    pButton
+    pRipple
+    [icon]="loadingChat ? 'pi pi-spin pi-spinner' : 'pi pi-refresh'"
+    class="p-button-outlined p-button-warn"
+    (click)="fetchAllChat()"
+  ></button>
   <button
     pButton
     pRipple

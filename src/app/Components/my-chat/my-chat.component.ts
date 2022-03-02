@@ -37,7 +37,33 @@ export class MyChatComponent implements OnInit {
   defaultImage =
     'https://res.cloudinary.com/what-is-app/image/upload/v1646062233/profilePic_uigcf8.png';
   isProfileLoading = false;
+  notification: any[] = [];
+  itemsNotification: MenuItem[] = [];
   ngOnInit(): void {
+    this.chatService.notification.subscribe((n) => {
+      this.notification = n;
+      console.log(this.notification);
+      this.itemsNotification = [];
+      this.notification.forEach((noti: any) => {
+        this.itemsNotification.push({
+          label: noti.chat.isGroupChat
+            ? noti.chat.chatName.substring(0, 15) +
+              ' : ' +
+              noti.content.substring(0, 15)
+            : noti.sender.name.substring(0, 10) +
+              ' : ' +
+              noti.content.substring(0, 15),
+          command: () => {
+            this.chatService.selectedChatSubject.next(noti.chat._id);
+            this.chatService.selectedFullChatSubject.next(noti.chat);
+            let newNotification = this.notification.filter(
+              (n) => n.chat._id !== noti.chat._id
+            );
+            this.chatService.notification.next(newNotification);
+          },
+        });
+      });
+    });
     this.isProfileLoading = true;
     this.AS.getMyProfile().subscribe((res: User) => {
       console.log(res);
@@ -65,11 +91,17 @@ export class MyChatComponent implements OnInit {
       this.fetchAllChat();
     });
   }
+  loadingChat = false;
   fetchAllChat() {
-    this.chatService.getChat().subscribe((res: Chat[]) => {
-      console.log(res);
-      this.chats = res;
-    });
+    this.loadingChat = true;
+    this.chatService.getChat().subscribe(
+      (res: Chat[]) => {
+        console.log(res);
+        this.chats = res;
+        this.loadingChat = false;
+      },
+      (err) => (this.loadingChat = false)
+    );
   }
 
   getChatImage(chat: Chat, option: boolean = true) {
